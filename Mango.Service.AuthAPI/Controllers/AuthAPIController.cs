@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Mango.Service.AuthAPI.Models.Dto;
+using Mango.Service.AuthAPI.Service.IService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Service.AuthAPI.Controllers
@@ -7,18 +9,42 @@ namespace Mango.Service.AuthAPI.Controllers
     [ApiController]
     public class AuthAPIController : ControllerBase
     {
+        private readonly IAuthService _authService;
+        protected ResponseDto _response;
+
+        public AuthAPIController(IAuthService authService)
+        {
+            _authService = authService;
+            _response = new();
+        }
+
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
-            return Ok();
+            var loginResponse = await _authService.Login(model);
+            if (loginResponse.User == null || loginResponse.Token == null)
+            {
+                _response.IsSuccess = false;
+                _response.Message = "Login Failed, Username or password is incorrect.";
+                return BadRequest(_response);
+            }
+            _response.Result = loginResponse;
+            return Ok(_response);
         }
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register()
+        public async Task<IActionResult> Register([FromBody] RegistrationRequestDto model)
         {
-            return Ok();
+            var errorMessage = await _authService.Register(model);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                _response.IsSuccess = false;
+                _response.Message = errorMessage;
+                return BadRequest(_response);
+            }
+            return Ok(_response);
         }
 
         [HttpPost]

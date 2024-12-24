@@ -1,11 +1,15 @@
 using Mango.Service.AuthAPI.Data;
 using Mango.Service.AuthAPI.Models;
+using Mango.Service.AuthAPI.Service;
+using Mango.Service.AuthAPI.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddScoped<IAuthService, AuthService>(); 
 
 //Add dependency for dbcontext
 builder.Services.AddDbContext<AppDbContext>(options =>
