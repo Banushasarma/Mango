@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Mango.Service.CouponAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,32 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//Configure JwtOptions
-var secret = builder.Configuration.GetValue<string>("ApiSettings:Secret");
-var issuer = builder.Configuration.GetValue<string>("ApiSettings:Issuer");
-var audience = builder.Configuration.GetValue<string>("ApiSettings:Audience");
-
-var key = Encoding.ASCII.GetBytes(secret);
-
-builder.Services.AddAuthentication(x =>
-   {
-       x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-       x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-   })
-  .AddJwtBearer(x =>
-   {
-       x.RequireHttpsMetadata = false;
-       x.SaveToken = true;
-       x.TokenValidationParameters = new TokenValidationParameters
-       {
-           ValidateIssuerSigningKey = true,
-           IssuerSigningKey = new SymmetricSecurityKey(key),
-           ValidateIssuer = true,
-           ValidIssuer = issuer,
-           ValidateAudience = true,
-           ValidAudience = audience
-       };
-   });
+builder.AddAppAuthentication();
 
 builder.Services.AddAuthorization();
 
@@ -52,8 +28,6 @@ IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 //Add dependency injection fpr mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
