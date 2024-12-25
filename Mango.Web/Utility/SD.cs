@@ -12,6 +12,11 @@
         public const string RoleAdmin = "ADMIN";
         public const string RoleCustomer = "CUSTOMER";
 
+        //Set cookie name for token
+        public const string TokenCookie = "JWTToken";
+
+
+
         //Add Enum for ApiTypes
         public enum ApiType
         {
