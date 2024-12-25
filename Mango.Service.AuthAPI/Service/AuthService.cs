@@ -22,10 +22,26 @@ namespace Mango.Service.AuthAPI.Service
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
+        async Task<bool> IAuthService.AssignRole(string email, string roleName)
+        {
+            var user = _db.ApplicationUsers.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
+            if (user != null)
+            {
+                if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
+                {
+                    // Create a new role if it does not exist
+                    _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+                }
+                await _userManager.AddToRoleAsync(user, roleName);
+                return true;
+            }
+            return false;
+        }
+
         async Task<LoginResponseDto> IAuthService.Login(LoginRequestDto loginRequestDto)
         {
 
-            var user = _db.ApplicationUsers.FirstOrDefault(u => u.Email == loginRequestDto.Email);
+            var user = _db.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDto.UserName.ToLower());
 
             var isValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
 
