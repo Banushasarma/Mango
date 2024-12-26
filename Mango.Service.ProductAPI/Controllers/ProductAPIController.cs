@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Mango.Service.ProductAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/product")]
     [ApiController]
     [Authorize]
     public class ProductAPIController : ControllerBase

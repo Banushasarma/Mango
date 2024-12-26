@@ -8,6 +8,10 @@
         //Base URL for coupon API
         public static string CouponAPIBase { get; set; }
 
+        //Base URL for Product API
+        public static string ProductAPIBase { get; set; }
+
+
         //Add static role
         public const string RoleAdmin = "ADMIN";
         public const string RoleCustomer = "CUSTOMER";
