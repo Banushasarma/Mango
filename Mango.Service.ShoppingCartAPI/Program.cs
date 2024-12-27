@@ -1,7 +1,9 @@
-using AutoMapper;  
+using AutoMapper;
 using Mango.Service.ShoppingCartAPI;
 using Mango.Service.ShoppingCartAPI.Data;
 using Mango.Service.ShoppingCartAPI.Extensions;
+using Mango.Service.ShoppingCartAPI.Service;
+using Mango.Service.ShoppingCartAPI.Service.IService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -25,6 +27,10 @@ builder.Services.AddSingleton(mapper);
 //Add dependency injection fpr mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddScoped<IProductService, ProductService>();
+
+//HttpClient for calling Product API
+builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"]));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -92,4 +98,3 @@ void ApplyMigration()
         }
     }
 }
- 
