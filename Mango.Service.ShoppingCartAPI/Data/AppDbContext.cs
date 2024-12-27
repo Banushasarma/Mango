@@ -1,7 +1,7 @@
 ﻿using Mango.Service.ShoppingCartAPI.Models; 
 using Microsoft.EntityFrameworkCore;
 
-namespace Mango.Service.ProductAPI.Data
+namespace Mango.Service.ShoppingCartAPI.Data
 {
     public class AppDbContext : DbContext
     {

@@ -1,6 +1,6 @@
-using AutoMapper;
-using Mango.Service.ProductAPI.Data;
-using Mango.Service.ShoppingCartAPI; 
+using AutoMapper;  
+using Mango.Service.ShoppingCartAPI;
+using Mango.Service.ShoppingCartAPI.Data;
 using Mango.Service.ShoppingCartAPI.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
