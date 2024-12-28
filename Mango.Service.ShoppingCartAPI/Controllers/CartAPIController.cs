@@ -21,13 +21,15 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
         private readonly ResponseDto _responseDTO;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
+        private readonly ICouponService _couponService;
 
-        public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService)
+        public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService, ICouponService couponService)
         {
             _context = context;
             _responseDTO = new ResponseDto();
             _mapper = mapper;
             _productService = productService;
+            _couponService = couponService;
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -47,6 +49,16 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
                 {
                     cartDetail.Product = productDtos.FirstOrDefault(u => u.ProductId == cartDetail.ProductId);
                     cartDto.CartHeader.CartTotal += cartDetail.Product.Price * cartDetail.Count;
+                }
+
+                if (!string.IsNullOrEmpty(cartDto.CartHeader.CouponCode))
+                {
+                    CouponDto coupon = await _couponService.GetCoupon(cartDto.CartHeader.CouponCode);
+                    if (coupon != null && cartDto.CartHeader.CartTotal > coupon.MinAmount)
+                    {
+                        cartDto.CartHeader.CartTotal -= coupon.DiscountAmount;
+                        cartDto.CartHeader.Discount = coupon.DiscountAmount;
+                    }
                 }
 
                 _responseDTO.Result = cartDto;
@@ -79,7 +91,7 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
             return _responseDTO;
         }
 
-        
+
         [HttpPost("CartUpsert")]
         public async Task<ResponseDto> CartUpsert(CartDto cartDto)
         {
