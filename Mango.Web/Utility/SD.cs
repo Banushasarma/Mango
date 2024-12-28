@@ -2,14 +2,11 @@
 {
     public class SD
     {
-        //Base URL for Auth API
+        //Base URL for Service APIs
         public static string AuthAPIBase { get; set; }
-
-        //Base URL for coupon API
         public static string CouponAPIBase { get; set; }
-
-        //Base URL for Product API
         public static string ProductAPIBase { get; set; }
+        public static string ShoppingCartAPIBase { get; set; }
 
 
         //Add static role

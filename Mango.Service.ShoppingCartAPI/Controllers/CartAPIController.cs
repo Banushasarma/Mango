@@ -14,10 +14,7 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
     [ApiController]
     public class CartAPIController : ControllerBase
     {
-
-        //Add dependency injection for AppDbContext
         private readonly AppDbContext _context;
-        //Add dependency for response dto
         private readonly ResponseDto _responseDTO;
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
@@ -74,7 +71,7 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
 
         //Apply Coupon
         [HttpPost("ApplyCoupon")]
-        public async Task<ResponseDto> ApplyCoupon(CartDto cartDto)
+        public async Task<ResponseDto> ApplyCoupon([FromBody] CartDto cartDto)
         {
             try
             {
@@ -97,54 +94,48 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
         {
             try
             {
-                var cartHeaderFromDb = await _context.CartHeaders.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == cartDto.CartHeader.UserId);
+                var cartHeaderFromDb = await _context.CartHeaders.AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.UserId == cartDto.CartHeader.UserId);
                 if (cartHeaderFromDb == null)
                 {
-                    //create the cart header and details
+                    //create header and details
                     CartHeader cartHeader = _mapper.Map<CartHeader>(cartDto.CartHeader);
                     _context.CartHeaders.Add(cartHeader);
                     await _context.SaveChangesAsync();
-
-                    //add the cart details
                     cartDto.CartDetails.First().CartHeaderId = cartHeader.CartHeaderId;
                     _context.CartDetails.Add(_mapper.Map<CartDetails>(cartDto.CartDetails.First()));
                     await _context.SaveChangesAsync();
-
                 }
                 else
                 {
-                    //If header is not null
-                    //check if the cart details has the same product
+                    //if header is not null
+                    //check if details has same product
                     var cartDetailsFromDb = await _context.CartDetails.AsNoTracking().FirstOrDefaultAsync(
-                        u => u.ProductId == cartDto.CartDetails.First().ProductId
-                        && u.CartHeaderId == cartHeaderFromDb.CartHeaderId);
-
+                        u => u.ProductId == cartDto.CartDetails.First().ProductId &&
+                        u.CartHeaderId == cartHeaderFromDb.CartHeaderId);
                     if (cartDetailsFromDb == null)
                     {
-                        //create new cart details
+                        //create cartdetails
                         cartDto.CartDetails.First().CartHeaderId = cartHeaderFromDb.CartHeaderId;
                         _context.CartDetails.Add(_mapper.Map<CartDetails>(cartDto.CartDetails.First()));
                         await _context.SaveChangesAsync();
                     }
                     else
                     {
-                        //update count in the cart details
+                        //update count in cart details
                         cartDto.CartDetails.First().Count += cartDetailsFromDb.Count;
                         cartDto.CartDetails.First().CartHeaderId = cartDetailsFromDb.CartHeaderId;
                         cartDto.CartDetails.First().CartDetailsId = cartDetailsFromDb.CartDetailsId;
                         _context.CartDetails.Update(_mapper.Map<CartDetails>(cartDto.CartDetails.First()));
                         await _context.SaveChangesAsync();
-
                     }
                 }
-                _responseDTO.IsSuccess = true;
-                _responseDTO.Message = "Operation completed successfully";
-
+                _responseDTO.Result = cartDto;
             }
             catch (Exception ex)
             {
+                _responseDTO.Message = ex.Message.ToString();
                 _responseDTO.IsSuccess = false;
-                _responseDTO.Message = $"An error occurred while adding/updating the cart: {ex.Message}";
             }
             return _responseDTO;
         }

@@ -10,20 +10,26 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+
+//Add HttpClient Services
 builder.Services.AddHttpClient<ICouponService, CouponService>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddHttpClient<IProductService, ProductService>();
+builder.Services.AddHttpClient<ICartService, CartService>();
 
 //Configure service URLs
 SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
 SD.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"];
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
+SD.ShoppingCartAPIBase = builder.Configuration["ServiceUrls:ShoppingCartAPI"];
 
+//Define the DI Service lifetime
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
