@@ -10,7 +10,7 @@ namespace Mango.Service.ProductAPI.Controllers
 {
     [Route("api/product")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ProductAPIController : ControllerBase
     {
         //Add dependency injection for AppDbContext
@@ -71,7 +71,7 @@ namespace Mango.Service.ProductAPI.Controllers
 
         //Create a new product
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public ResponseDto Post([FromBody] ProductDto productDto)
         {
             try
@@ -91,7 +91,7 @@ namespace Mango.Service.ProductAPI.Controllers
 
         //Update an existing product
         [HttpPut]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public ResponseDto Put([FromBody] ProductDto productDto)
         {
             try
@@ -111,7 +111,7 @@ namespace Mango.Service.ProductAPI.Controllers
 
         //Delete an existing product
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "ADMIN")]
+        [Authorize(Roles = "ADMIN")]
         public ResponseDto Delete(int id)
         {
             try
