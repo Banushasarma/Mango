@@ -60,7 +60,26 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
             return _responseDTO;
         }
 
+        //Apply Coupon
+        [HttpPost("ApplyCoupon")]
+        public async Task<ResponseDto> ApplyCoupon(CartDto cartDto)
+        {
+            try
+            {
+                var cartFromDb = await _context.CartHeaders.FirstAsync(u => u.UserId == cartDto.CartHeader.UserId);
+                cartFromDb.CouponCode = cartDto.CartHeader.CouponCode;
+                _context.CartHeaders.Update(cartFromDb);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = $"An error occurred while applying the coupon: {ex.Message}";
+            }
+            return _responseDTO;
+        }
 
+        
         [HttpPost("CartUpsert")]
         public async Task<ResponseDto> CartUpsert(CartDto cartDto)
         {
