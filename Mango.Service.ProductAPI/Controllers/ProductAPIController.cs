@@ -10,7 +10,6 @@ namespace Mango.Service.ProductAPI.Controllers
 {
     [Route("api/product")]
     [ApiController]
-    [Authorize]
     public class ProductAPIController : ControllerBase
     {
         //Add dependency injection for AppDbContext
