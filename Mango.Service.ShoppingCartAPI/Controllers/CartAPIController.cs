@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Azure;
+using Mango.MessageBus;
 using Mango.Service.ShoppingCartAPI.Data;
 using Mango.Service.ShoppingCartAPI.Models;
 using Mango.Service.ShoppingCartAPI.Models.Dto;
 using Mango.Service.ShoppingCartAPI.Service.IService;
-using Mango.ServiceBus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

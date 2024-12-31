@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Mango.ServiceBus\Mango.ServiceBus.csproj" />
+	  <ProjectReference Include="..\Mango.ServiceBus\Mango.MessageBus.csproj" />
 	</ItemGroup>
 
 </Project>
