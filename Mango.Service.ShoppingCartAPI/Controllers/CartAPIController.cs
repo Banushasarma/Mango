@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Azure;
 using Mango.Service.ShoppingCartAPI.Data;
 using Mango.Service.ShoppingCartAPI.Models;
 using Mango.Service.ShoppingCartAPI.Models.Dto;
 using Mango.Service.ShoppingCartAPI.Service.IService;
+using Mango.ServiceBus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,14 +21,18 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICouponService _couponService;
+        private readonly IMessageBus _messageBus;
+        private IConfiguration _configuration;
 
-        public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService, ICouponService couponService)
+        public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService, ICouponService couponService, IMessageBus messageBus, IConfiguration configuration)
         {
             _context = context;
             _responseDTO = new ResponseDto();
             _mapper = mapper;
             _productService = productService;
             _couponService = couponService;
+            _messageBus = messageBus;
+            _configuration = configuration;
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -84,6 +90,22 @@ namespace Mango.Service.ShoppingCartAPI.Controllers
             {
                 _responseDTO.IsSuccess = false;
                 _responseDTO.Message = $"An error occurred while applying the coupon: {ex.Message}";
+            }
+            return _responseDTO;
+        }
+
+        [HttpPost("EmailCartRequest")]
+        public async Task<object> EmailCartRequest([FromBody] CartDto cartDto)
+        {
+            try
+            {
+                await _messageBus.PublishMessage(cartDto, _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue"));
+                _responseDTO.Result = true;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.Message = ex.ToString();
             }
             return _responseDTO;
         }
